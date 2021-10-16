@@ -1,4 +1,4 @@
-module github.com/go-chi/jwtauth/v5
+module github.com/waffleboot/jwtauth/v5
 
 go 1.15
 
