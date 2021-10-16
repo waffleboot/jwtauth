@@ -62,7 +62,7 @@ func New(alg string, signKey interface{}, verifyKey interface{}) *JWTAuth {
 // http response.
 func Verifier(ja *JWTAuth) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
-		return Verify(ja, TokenFromHeader, TokenFromCookie)(next)
+		return Verify(ja, TokenFromHeader, TokenFromCookie("jwt"))(next)
 	}
 }
 
@@ -242,12 +242,14 @@ func SetExpiryIn(claims map[string]interface{}, tm time.Duration) {
 
 // TokenFromCookie tries to retreive the token string from a cookie named
 // "jwt".
-func TokenFromCookie(r *http.Request) string {
-	cookie, err := r.Cookie("jwt")
-	if err != nil {
-		return ""
+func TokenFromCookie(name string) func(*http.Request) string {
+	return func(r *http.Request) string {
+		cookie, err := r.Cookie(name)
+		if err != nil {
+			return ""
+		}
+		return cookie.Value
 	}
-	return cookie.Value
 }
 
 // TokenFromHeader tries to retreive the token string from the
